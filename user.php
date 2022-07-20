@@ -1,6 +1,6 @@
 <?php
     include('config.php');
-    class Student {
+    class Student extends Exception{
         public $id;
         public $name;
         public $email;
@@ -23,6 +23,7 @@
              * The user are reuqired to fill all the given field to submit the data else error message will be shown
              * vallidation is done in this function to make user provide correct information
              * User cannot submit record if any field is left empty
+             * success message is shown in homepage after user successfully insert the data
              */
             if (empty($this->name) || empty($this->email) || empty($this->address)
             || empty($this->phone) || empty($this->gender)
@@ -57,7 +58,7 @@
                 $_SESSION['msg'] = "Data inserted successfully";
                 header('location:index.php');
             } else {
-                echo mysqli_error($GLOBALS['conn']);
+                throw new Exception(mysqli_error($GLOBALS['conn']));
             }
         }
         }
@@ -68,24 +69,28 @@
              * If any error occurs then it will not display the data 
              * It throw errors if any fault is there in the code
              */
-            $data = array();
-            $sql = "SELECT * FROM `students`";
-            $result = $GLOBALS['conn']->query($sql);
-            mysqli_close($GLOBALS['conn']);
-            if($result->num_rows > 0) {
-                while($row = mysqli_fetch_object($result)) {
-                    $std = new Student();
-                    $std->id = $row->id;
-                    $std->name = $row->name;
-                    $std->email = $row->email;
-                    $std ->address = $row->address;
-                    $std->phone = $row->phone;
-                    $std->gender = $row->gender;
-                    array_push($data, $std);
-                };
-                return $data;
-            } else {
-                echo mysqli_error($GLOBALS['conn']);
+            try {
+                $data = array();
+                $sql = "SELECT * FROM `students`";
+                $result = $GLOBALS['conn']->query($sql);
+                mysqli_close($GLOBALS['conn']);
+                if($result->num_rows > 0) {
+                    while($row = mysqli_fetch_object($result)) {
+                        $std = new Student();
+                        $std->id = $row->id;
+                        $std->name = $row->name;
+                        $std->email = $row->email;
+                        $std ->address = $row->address;
+                        $std->phone = $row->phone;
+                        $std->gender = $row->gender;
+                        array_push($data, $std);
+                    };
+                    return $data;
+                } else {
+                    throw new Exception(mysqli_error($GLOBALS['conn']));
+                }
+            } catch(Exception $e) {
+                echo $e->getMessage();
             }
         }
 
@@ -95,23 +100,23 @@
              * The data will be shown on update form with the help of id
              * The user will get information of only selected item from the table
              */
-            $sql = "SELECT * FROM `students` WHERE id='$this->id'";
-            $result = $GLOBALS['conn']->query($sql);
-            mysqli_close($GLOBALS['conn']);
-            if($result->num_rows==1) {
-                $row = mysqli_fetch_object($result);
-                $std = new Student();
-                $data = array(
-                    $this->id = $row->id,
-                    $this->name = $row->name,
-                    $this->email = $row->email,
-                    $this->address = $row->address,
-                    $this->phone = $row->phone,
-                    $this->gender = $row->gender
-                );
-                return (object)$data;
-            } else {
-                die(mysqli_error($GLOBALS['conn']));
+            try {
+                $sql = "SELECT * FROM `students` WHERE id='$this->id'";
+                $result = $GLOBALS['conn']->query($sql);
+                mysqli_close($GLOBALS['conn']);
+                if($result->num_rows==1) {
+                    $row = mysqli_fetch_object($result);
+                        $this->id = $row->id;
+                        $this->name = $row->name;
+                        $this->email = $row->email;
+                        $this->address = $row->address;
+                        $this->phone = $row->phone;
+                        $this->gender = $row->gender;
+                } else {
+                    throw new Exception(mysqli_error($GLOBALS['conn']));
+                }
+            }catch(Exception $e) {
+                echo $e->getMessage();
             }
         }
 
@@ -122,6 +127,7 @@
              * The validation stops user from providing invalid information
              * This will then return to homepage if update is successful with success message
              */
+        try {
             if (empty($this->name) || empty($this->email) || empty($this->address)
             || empty($this->phone) || empty($this->gender)
         ) {
@@ -155,22 +161,30 @@
                 $_SESSION['status'] = "Data updated successfully";
                 header('location:index.php');
             } else {
-                echo mysqli_error($GLOBALS['conn']);
+                throw new Exception(mysqli_error($GLOBALS['conn']));
             }
+        }
+        } catch(Exception $e) {
+            echo $e->getMessage();
         }
     }
 
     public function deleteRecord($deleteid) {
         /**
          * This will delete the record from database
+         * If id is not found then it will throw error and not let user delete record
          */
-        $sql = "DELETE FROM `students` WHERE id='$deleteid'";
-        $result = $GLOBALS['conn']->query($sql);
-        mysqli_close($GLOBALS['conn']);
-        if($result) {
-            header('location:index.php');
-        } else {
-            echo mysqli_error($GLOBALS['conn']);
+        try {
+            $sql = "DELETE FROM `students` WHERE id='$deleteid'";
+            $result = $GLOBALS['conn']->query($sql);
+            mysqli_close($GLOBALS['conn']);
+            if($result) {
+                header('location:index.php');
+            } else {
+                throw new Exception(mysqli_error($GLOBALS['conn']));
+            }
+        } catch(Exception $e) {
+            echo $e->getMessage();
         }
     }
 }
