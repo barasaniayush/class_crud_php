@@ -1,6 +1,6 @@
 <?php
     session_start();
-    include('college.php');
+    include('user.php');
     if(isset($_POST['submit'])) {
         $name = $_POST['name'];
         $email = $_POST['email'];
@@ -12,14 +12,15 @@
     }
 
     if(isset($_POST['update'])) {
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $address = $_POST['address'];
-        $phone = $_POST['phone'];
-        $gender = $_POST['gender'];
-        $id = $_POST['hid'];
-        $student = new Student($id, $name, $email, $address, $phone, $gender);
-        $student->updateRecord();
+        $obj = new Student();
+        $obj->name = $_POST['name'];
+        $obj->email = $_POST['email'];
+        $obj->address = $_POST['address'];
+        $obj->phone = $_POST['phone'];
+        $obj->gender = $_POST['gender'];
+        $obj->id = $_POST['hid'];
+        $student = new Student($obj->id, $obj->name, $obj->email, $obj->address, $obj->phone, $obj->gender);
+        $student->editRecord();
     }
 ?>
 
@@ -42,9 +43,9 @@
     <div class="container my-5">
         <?php
         if (isset($_GET['updateid'])) {
-            $updateid = $_GET['updateid'];
-            $student = new Student($updateid);
-            $myrecord = $student->viewRecordById();
+            $data = new Student();
+            $data->id = $_GET['updateid'];
+            $data->viewRecordById();
         ?>
             <h3 class="my-3">Update Record</h3>
             <?php
@@ -59,27 +60,27 @@
             <form action="" method="post">
                 <div class="form-group">
                     <label for="">Name</label>
-                    <input type="text" name="name" id="name" class="form-control" value="<?php echo $myrecord['name']; ?>"><br>
+                    <input type="text" name="name" id="name" class="form-control" value="<?php echo $data->name; ?>"><br>
                 </div>
                 <div class="form-group">
                     <label for="">Email</label>
-                    <input type="text" name="email" id="email" class="form-control" value="<?php echo $myrecord['email']; ?>"><br>
+                    <input type="text" name="email" id="email" class="form-control" value="<?php echo $data->email; ?>"><br>
                 </div>
                 <div class="form-group">
                     <label for="">Address</label>
-                    <input type="text" name="address" id="address" class="form-control" value="<?php echo $myrecord['address']; ?>"><br>
+                    <input type="text" name="address" id="address" class="form-control" value="<?php echo $data->address; ?>"><br>
                 </div>
                 <div class="form-group">
                     <label for="">Phone</label>
-                    <input type="text" name="phone" id="phone" class="form-control" value="<?php echo $myrecord['phone']; ?>"><br>
+                    <input type="text" name="phone" id="phone" class="form-control" value="<?php echo $data->phone; ?>"><br>
                 </div>
                 <div class="form-group">
                     <label for="">Gender:</label>
-                    <input type="radio" name="gender" value="male" id="male" <?php echo($myrecord['gender']=='female')?"male":"checked"; ?>> Male
-                    <input type="radio" name="gender" id="female" value="female" <?php echo($myrecord['gender']=='male')?"female":"checked"; ?>> Female<br><br>
+                    <input type="radio" name="gender" value="male" id="male" <?php echo($data->gender=='female')?"male":"checked"; ?>> Male
+                    <input type="radio" name="gender" id="female" value="female" <?php echo($data->gender=='male')?"female":"checked"; ?>> Female<br><br>
                 </div>
                 <div class="form-group">
-                    <input type="hidden" name="hid" value="<?php echo $myrecord['id']; ?>">
+                    <input type="hidden" name="hid" value="<?php echo $data->id; ?>">
                     <input type="submit" value="Update" name="update" id="update" class="btn btn-primary">
                 </div>
             </form>
@@ -96,7 +97,7 @@
             unset($_SESSION['all']);
             }
             ?>
-            <form action="" method="post">
+            <form action="#" method="post">
                 <div class="form-group">
                     <label for="">Name</label>
                     <input type="text" name="name" id="name" class="form-control" placeholder="Enter Full Name"><br>
@@ -125,5 +126,4 @@
         <?php } ?><br>
     </div>
 </body>
-
 </html>

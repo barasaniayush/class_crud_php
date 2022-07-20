@@ -1,11 +1,11 @@
 <?php
 session_start();
-include('college.php');
+include('user.php');
 
 $student = new Student();
 
 if (isset($_POST['update'])) {
-    $student->updateRecord();
+    $student->editRecord($this->id);
 }
 
 if (isset($_REQUEST['deleteid'])) {
@@ -29,7 +29,7 @@ if (isset($_REQUEST['deleteid'])) {
 <body>
     <nav class="navbar bg-dark">
         <form class="container-fluid justify-content-center">
-            <a href="add.php"><button class="btn btn-success mx-5" type="button">Add New Student</button></a>
+            <a href="add.php"><button class="btn btn-success mx-5" type="button">Add New User</button></a>
         </form>
     </nav>
     <div class="container">
@@ -65,24 +65,34 @@ if (isset($_REQUEST['deleteid'])) {
                 <td>Action</td>
             </tr>
             <?php
-            $data = $student->viewRecord();
+            $student = new Student();
+            $data = $student->listAll();
             $sn = 1;
-            foreach ($data as $value) {
+            if ($data) {
+                foreach ($data as $key => $value) {
+                    //var_dump($value);
             ?>
                 <tr class="text-center">
                     <td><?php echo $sn++; ?></td>
-                    <td><?php echo $value['name']; ?></td>
-                    <td><?php echo $value['email']; ?></td>
-                    <td><?php echo $value['address']; ?></td>
-                    <td><?php echo $value['phone']; ?></td>
-                    <td><?php echo $value['gender']; ?></td>
+                    <td><?php echo $value->name; ?></td>
+                    <td><?php echo $value->email; ?></td>
+                    <td><?php echo $value->address; ?></td>
+                    <td><?php echo $value->phone; ?></td>
+                    <td><?php echo $value->gender; ?></td>
                     <td>
-                        <a href="add.php?updateid=<?php echo $value['id']; ?>"><button class="btn btn-primary">Edit</button></a>
-                        <a href="index.php?deleteid=<?php echo $value['id']; ?>"><button class="btn btn-danger">Delete</button></a>
+                        <a href="add.php?updateid=<?php echo $value->id; ?>"><button class="btn btn-primary">Edit</button></a>
+                        <a href="index.php?deleteid=<?php echo $value->id; ?>"><button class="btn btn-danger">Delete</button></a>
                     </td>
                 </tr>
             <?php
-            }
+                }
+            } else {
+                ?>
+                <tr class="text-center">
+                    <td colspan="7">No Record Available</td>
+                </tr>
+            <?php
+                }
             ?>
         </table>
     </div>
