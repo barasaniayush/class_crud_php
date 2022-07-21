@@ -1,6 +1,6 @@
 <?php
     include('config.php');
-    class Student{
+    class  Student{
         public $id;
         public $name;
         public $email;
@@ -45,7 +45,7 @@
         }
     
         if (!preg_match("/^[a-zA-z ,]*$/", $this->address)) {
-            $_SESSION['all'] = "Address is invalid. Please enter alphabets only";
+            $_SESSION['all'] = "Address is invalid. Please enter valid address only";
             return false;
         }
         $sql1 = "SELECT * FROM `students` WHERE email='$this->email'";
@@ -70,8 +70,9 @@
                 throw new Exception(mysqli_error($GLOBALS['conn']));
             }
         }
+        $GLOBALS['conn']->close();
         }
-    
+
         public function listAll() {
             /**
              * This will list all the data from the database table `students`
@@ -100,6 +101,7 @@
             } catch(Exception $e) {
                 echo $e->getMessage();
             }
+            $GLOBALS['conn']->close();
         }
 
         public function viewRecordById() {
@@ -126,6 +128,7 @@
             }catch(Exception $e) {
                 echo $e->getMessage();
             }
+            $GLOBALS['conn']->close();
         }
 
         public function editRecord() {
@@ -159,9 +162,25 @@
         }
     
         if (!preg_match("/^[a-zA-z ,]*$/", $this->address)) {
-            $_SESSION['update'] = "Address is invalid";
+            $_SESSION['update'] = "Address is invalid. Please enter valid address only";
             return false;
-        } else {
+        }
+        
+        $sql2 = "SELECT * FROM `students` WHERE email='$this->email'";
+        $result2 = mysqli_query($GLOBALS['conn'], $sql2);
+        if(mysqli_num_rows($result2) > 0) {
+            $_SESSION['update'] = "Email address already exists.";
+            return false;
+        }
+
+        $sql2 = "SELECT * FROM `students` WHERE phone='$this->phone'";
+        $result2 = mysqli_query($GLOBALS['conn'], $sql2);
+        if(mysqli_num_rows($result2) > 0) {
+            $_SESSION['update'] = "Phone number already exists.";
+            return false;
+        }
+        
+        else {
             $sql = "UPDATE `students` SET name='$this->name', email='$this->email', address='$this->address', phone='$this->phone', gender='$this->gender' WHERE id='$this->id'";
             $result = mysqli_query($GLOBALS['conn'], $sql);
             if ($result) {
@@ -174,6 +193,7 @@
         } catch(Exception $e) {
             echo $e->getMessage();
         }
+        $GLOBALS['conn']->close();
     }
 
     public function deleteRecord($deleteid) {
@@ -192,5 +212,6 @@
         } catch(Exception $e) {
             echo $e->getMessage();
         }
+        $GLOBALS['conn']->close();
     }
 }
