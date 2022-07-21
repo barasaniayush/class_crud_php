@@ -65,12 +65,10 @@ if (isset($_REQUEST['deleteid'])) {
                 <td>Action</td>
             </tr>
             <?php
-            $student = new Student();
             $data = $student->listAll();
             $sn = 1;
             if ($data) {
-                foreach ($data as $key => $value) {
-                    //var_dump($value);
+                foreach ($data as $value) {
             ?>
                 <tr class="text-center">
                     <td><?php echo $sn++; ?></td>
@@ -97,5 +95,4 @@ if (isset($_REQUEST['deleteid'])) {
         </table>
     </div>
 </body>
-
 </html>

@@ -45,6 +45,8 @@
         if (isset($_GET['updateid'])) {
             $data = new Student();
             $data->id = $_GET['updateid'];
+            //echo gettype($data);
+            //var_dump($data);
             $data->viewRecordById();
         ?>
             <h3 class="my-3">Update Record</h3>
